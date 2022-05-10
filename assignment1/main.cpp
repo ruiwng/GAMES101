@@ -58,6 +58,38 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     return projection;
 }
 
+Eigen::Matrix4f get_rotation(Vector3f axis, float angle)
+{
+    Vector3f x_axis, y_axis;
+    Vector3f z_axis = axis.normalized();
+    if(z_axis.x() <= z_axis.y() && z_axis.x() <= z_axis.z()) {
+        x_axis = Vector3f(0.f, -z_axis.z(), z_axis.y());
+    } else if(z_axis.y() <= z_axis.x() && z_axis.y() <= z_axis.z()) {
+        x_axis = Vector3f(-z_axis.z(), 0.f, z_axis.x());
+    } else {
+        x_axis = Vector3f(-z_axis.y(), z_axis.x(), 0.0f);
+    }
+    x_axis.normalize();
+    y_axis = z_axis.cross(x_axis);
+
+    Eigen::Matrix4f basis;
+    basis << x_axis.x(),x_axis.y(), x_axis.z(), 0.0f,
+             y_axis.x(),y_axis.y(), y_axis.z(), 0.0f,
+             z_axis.x(),z_axis.y(), z_axis.z(), 0.0f,
+             0.0f, 0.0f, 0.0f, 1.0f;
+    
+    float radian = angle / 180.0f * MY_PI;
+    float s = std::sin(radian);
+    float c = std::cos(radian);
+    Eigen::Matrix4f rotation_z;
+    rotation_z << c, -s, 0.0f, 0.0f,
+                  s, c, 0.0f, 0.0f,
+                  0.0f, 0.0f, 1.0f, 0.0f,
+                  0.0f, 0.0f, 0.0f, 1.0f;
+
+    return basis.transpose() * rotation_z * basis;
+}
+
 int main(int argc, const char** argv)
 {
     float angle = 0;
