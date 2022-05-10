@@ -36,3 +36,25 @@ Of course, the packages should be added too.
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 ```
+
+## Assignment 1: Basic Transformation
+
+In this assignment, we need to implement three basic transformations: rotation about Z-axis, perspective projection and rotation about arbitrary axis passing through origin.
+
+Rotation about Z-axis is straightforward, we just apply rotation to the three basis [1, 0, 0], [0, 1, 0], [0, 0, 1], and fill the three columns of the matrix with these three new basis, then leave the four column of the matrix with translation which is [0， 0， 0].
+
+Computing perspective projection matrix is a little tricky, there are two mistakes it's prone to make, the first one is perspective division, what x- and y-coordinate need to divide is positive z-coordinate, rather than negative z-coordinate, on the other hand, what the camera can see is the coordinate whose z-coordinate is negative, so we need to transform it to a positive one. therefore we need get a homogoneous coordinate whose w is -z after applying the projection transformation, that is to say, the four row of the transformation is [0, 0, -1, 0], instead of [0， 0， 1， 0]. the second one is correctly computing the mapping from [zNear， zFar] to [-1, 1]，we need solve this equation:
+```latex
+-a * zNear + b = -zNear
+-a * zFar + b = zFar
+```
+
+To compute a rotation matrix about arbitrary axis passing through origin, you need only follow three steps:
+- Transform to the standard orthogonal basis.
+- Apply the rotation.
+- Transform back.
+
+To compute the matrix which we need to transform to the standard orthogonal basis, we need to build a new orthogonal basis, using the rotation axis as the z-axis, and calculate x-axis and y-axis, there are a lot of them, as long as x-axis, y-axis and z-axis are orthogonal to each other, and then set these three axis as the first three columns of the objective matrix. note that if a matrix is orthogornal matrix, you can calculate its inverse matrix by just transpose it which is fast.
+
+![assignment1](output/assignment1.png)
+
