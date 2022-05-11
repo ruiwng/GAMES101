@@ -37,7 +37,7 @@ find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 ```
 
-## Assignment 1: Basic Transformation
+## Assignment 1: Rotation And Projection
 
 In this assignment, we need to implement three basic transformations: rotation about Z-axis, perspective projection and rotation about arbitrary axis passing through origin.
 
