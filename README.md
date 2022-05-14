@@ -58,3 +58,18 @@ To compute the matrix which we need to transform to the standard orthogonal basi
 
 ![assignment1](output/assignment1.png)
 
+## Assignment 2: Triangles And Z-buffering
+
+The architecture provided by this assignment has done a lot for us. what left to us to do is just solving the visibility problem with the help of depth buffer. another problem is to judge whether a given point is in a triangle or not, which can be solved easily by calculating whether the point is all on the same side of the threes lines of the triangle using cross product.
+
+Another point worth mentioning is how to compute the perspective-correct interpolation, although this homework has already handled this problem for us, it's worthwhile to take some time to figure out how it works. such as how the z-coordinate is correctly interpolated, and how the attributes of the vertex is interpolated. If you want to know more, you can refer to Mathematics for 3D Game Programming and Computer Graphics, Third Edition, this book gives a very elegant and easy-to-understand explanation.
+
+SSAA(Super Sampling Anti-Aliasing) implementation is trival, a nice way is to just double the size of the frame buffer and the depth buffer, and after rasterization, down-sample the doubled frame buffer to a normal size. 
+
+Triangle without super sampling:
+
+![triangle](output/triangle.png)
+
+Triangle with super sampling:
+
+![super-sampling](output/super_sampling.png)
