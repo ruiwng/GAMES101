@@ -56,7 +56,7 @@ To compute a rotation matrix about arbitrary axis passing through origin, you ne
 
 To compute the matrix which we need to transform to the standard orthogonal basis, we need to build a new orthogonal basis, using the rotation axis as the z-axis, and calculate x-axis and y-axis, there are a lot of them, as long as x-axis, y-axis and z-axis are orthogonal to each other, and then set these three axis as the first three columns of the objective matrix. note that if a matrix is orthogornal matrix, you can calculate its inverse matrix by just transpose it which is fast.
 
-![assignment1](output/assignment1.png)
+<img src="output/assignment1.png" width ="480" height="480">
 
 ## Assignment 2: Triangles And Z-buffering
 
@@ -66,10 +66,34 @@ Another point worth mentioning is how to compute the perspective-correct interpo
 
 SSAA(Super Sampling Anti-Aliasing) implementation is trival, a nice way is to just double the size of the frame buffer and the depth buffer, and after rasterization, down-sample the doubled frame buffer to a normal size. 
 
-Triangle without super sampling:
+Triangle without and with super sampling:
 
-![triangle](output/triangle.png)
+<img src="output/triangle.png" width ="480" height="480"> <img src="output/super_sampling.png" width ="480" height="480">
 
-Triangle with super sampling:
+# Assignment 4: Pipeline and Shading
 
-![super-sampling](output/super_sampling.png)
+There are three mistakes existing in this assignment:
+- In the implementation of blinn-phong shading model, (0, 0, 10) is used as the camera pos, which is wrong, as in the camera coordiniate, the camera pos should be at the origin.
+- the essence of dispalcement map is adding some offset to vertex position according to the dislacement map, rather than to pixel position.
+- In the calculation of TBN transformation, the procedure of computing B is unreasonable. the B and T's direction should be consistent with the direction of U and V direction of the bump map respectively, only in this way, can the finite difference dU and dV be meaningful. If you want to know more, [LearnOpenGL](https://learnopengl.com/Advanced-Lighting/Normal-Mapping) gives a correction computation.
+
+Normal visualization:
+
+<img src="output/normal.png" width ="480" height="480">
+
+Blinn-Phong shading model:
+
+<img src="output/blinn_phong.png" width ="480" height="480">
+
+Bump map:
+
+<img src="output/bump_map.png" width ="480" height="480">
+
+Displacement map:
+
+<img src="output/displacement_map.png" width ="480" height="480">
+
+Texture nearest vs bilinear interpolation:
+
+<img src="output/texture_nearest_interpolation.png" width ="480" height="480"> <img src="output/texture_bilinear_interpolation.png" width="480" height="480">
+
