@@ -70,7 +70,7 @@ Triangle without and with super sampling:
 
 <img src="output/triangle.png" width ="480" height="480"> <img src="output/super_sampling.png" width ="480" height="480">
 
-# Assignment 4: Pipeline and Shading
+# Assignment 3: Pipeline and Shading
 
 There are three mistakes existing in this assignment:
 - In the implementation of blinn-phong shading model, (0, 0, 10) is used as the camera pos, which is wrong, as in the camera coordiniate, the camera pos should be at the origin.
