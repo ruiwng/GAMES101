@@ -77,21 +77,13 @@ There are three mistakes existing in this assignment:
 - the essence of dispalcement map is adding some offset to vertex position according to the dislacement map, rather than to pixel position.
 - In the calculation of TBN transformation, the procedure of computing B is unreasonable. the B and T's direction should be consistent with the direction of U and V direction of the bump map respectively, only in this way, can the finite difference dU and dV be meaningful. If you want to know more, [LearnOpenGL](https://learnopengl.com/Advanced-Lighting/Normal-Mapping) gives a correction computation.
 
-Normal visualization:
+Normal visualization and Blinn-Phong shading model:
 
-<img src="output/normal.png" width ="480" height="480">
+<img src="output/normal.png" width ="480" height="480"> <img src="output/blinn_phong.png" width ="480" height="480">
 
-Blinn-Phong shading model:
+Bump map and Displacement map:
 
-<img src="output/blinn_phong.png" width ="480" height="480">
-
-Bump map:
-
-<img src="output/bump_map.png" width ="480" height="480">
-
-Displacement map:
-
-<img src="output/displacement_map.png" width ="480" height="480">
+<img src="output/bump_map.png" width ="480" height="480"> <img src="output/displacement_map.png" width ="480" height="480">
 
 Texture nearest vs bilinear interpolation:
 
