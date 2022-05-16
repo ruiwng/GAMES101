@@ -70,7 +70,7 @@ Triangle without and with super sampling:
 
 <img src="output/triangle.png" width ="480" height="480"> <img src="output/super_sampling.png" width ="480" height="480">
 
-# Assignment 3: Pipeline and Shading
+## Assignment 3: Pipeline and Shading
 
 There are three mistakes existing in this assignment:
 - In the implementation of blinn-phong shading model, (0, 0, 10) is used as the camera pos, which is wrong, as in the camera coordiniate, the camera pos should be at the origin.
@@ -89,3 +89,10 @@ Texture nearest vs bilinear interpolation:
 
 <img src="output/texture_nearest_interpolation.png" width ="480" height="480"> <img src="output/texture_bilinear_interpolation.png" width="480" height="480">
 
+## Assignment 4: Bézier Curve
+
+This assignment is trival, it takes only several minutes to implement de Casteljau's algorihtm. the more interesting part is how to achieve anti-aliasing. here I not only assign the specified pixel a color, but also interpolate the surrounding eight pixels with one half the color. Take care not overwrite the ones which already have a value.
+
+Bézier curve without and with anti-aliasing:
+
+<img src="output/bezier_curve.png" width ="480" height="480"> <img src="output/bezier_curve_anti_aliasing.png" width ="480" height="480">
