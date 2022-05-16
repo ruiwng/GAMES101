@@ -50,6 +50,15 @@ void bezier(const std::vector<cv::Point2f> &control_points, cv::Mat &window)
     for(float t = 0.0f; t <= 1.0f; t += 0.001) {
         auto point = recursive_bezier(control_points, t);
         window.at<cv::Vec3b>(point.y, point.x)[1] = 255;
+
+        window.at<cv::Vec3b>(point.y - 1, point.x - 1)[1] = std::max(window.at<cv::Vec3b>(point.y - 1, point.x - 1)[1], (uchar)128);
+        window.at<cv::Vec3b>(point.y - 1, point.x)[1] = std::max(window.at<cv::Vec3b>(point.y - 1, point.x)[1], (uchar)128);
+        window.at<cv::Vec3b>(point.y - 1, point.x + 1)[1] = std::max(window.at<cv::Vec3b>(point.y - 1, point.x + 1)[1], (uchar)128);
+        window.at<cv::Vec3b>(point.y, point.x - 1)[1] = std::max(window.at<cv::Vec3b>(point.y, point.x - 1)[1], (uchar)128);
+        window.at<cv::Vec3b>(point.y, point.x + 1)[1] = std::max(window.at<cv::Vec3b>(point.y, point.x + 1)[1], (uchar)128);
+        window.at<cv::Vec3b>(point.y + 1, point.x - 1)[1] = std::max(window.at<cv::Vec3b>(point.y + 1, point.x - 1)[1], (uchar)128);
+        window.at<cv::Vec3b>(point.y + 1, point.x)[1] = std::max(window.at<cv::Vec3b>(point.y + 1, point.x)[1], (uchar)128);
+        window.at<cv::Vec3b>(point.y + 1, point.x + 1)[1] = std::max(window.at<cv::Vec3b>(point.y + 1, point.x + 1)[1], (uchar)128);
     }
 }
 
@@ -71,7 +80,7 @@ int main()
 
         if (control_points.size() == 4) 
         {
-            naive_bezier(control_points, window);
+            // naive_bezier(control_points, window);
             bezier(control_points, window);
 
             cv::imshow("Bezier Curve", window);
