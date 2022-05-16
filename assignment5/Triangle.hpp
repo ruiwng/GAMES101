@@ -11,7 +11,28 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f
     // that's specified bt v0, v1 and v2 intersects with the ray (whose
     // origin is *orig* and direction is *dir*)
     // Also don't forget to update tnear, u and v.
-    return false;
+    Vector3f v2v0 = v0 - v2;
+    Vector3f v2v1 = v1 - v2;
+    Vector3f v2o = orig - v2;
+
+    float det = dotProduct(crossProduct(v2v0, v2v1), -dir);
+    float det1 = dotProduct(crossProduct(v2o, v2v1), -dir);
+    float w = det1 / det;
+    if(w < 0.0f || w > 1.0f) {
+        return false;
+    }
+    float det2 = dotProduct(crossProduct(v2v0, v2o), -dir);
+    u = det2 / det;
+    if(u < 0.0f || w + u > 1.0f) {
+        return false;
+    }
+    float det3 = dotProduct(crossProduct(v2v0, v2v1), v2o);
+    tnear = det3 / det;
+    if(tnear < 0.0f) {
+        return false;
+    }
+    v = 1.0f - w - u;
+    return true;
 }
 
 class MeshTriangle : public Object
