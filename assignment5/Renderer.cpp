@@ -217,20 +217,25 @@ void Renderer::Render(const Scene& scene)
 
     // Use this variable as the eye position to start your rays.
     Vector3f eye_pos(0);
+    float scale_height = scale * 2.0f;
+    float scale_width = scale_height * imageAspectRatio;
+    float lower_left_x = -scale_width * 0.5f;
+    float lower_left_y = -scale_height * 0.5f;
     int m = 0;
     for (int j = 0; j < scene.height; ++j)
     {
         for (int i = 0; i < scene.width; ++i)
         {
             // generate primary ray direction
-            float x;
-            float y;
+            float x = lower_left_x + (i + 0.5f) / scene.width * scale_width;
+            float y = lower_left_y + (scene.height - j + 0.5f) / scene.height * scale_height;
             // TODO: Find the x and y positions of the current pixel to get the direction
             // vector that passes through it.
             // Also, don't forget to multiply both of them with the variable *scale*, and
             // x (horizontal) variable with the *imageAspectRatio*            
 
             Vector3f dir = Vector3f(x, y, -1); // Don't forget to normalize this direction!
+            dir = normalize(dir);
             framebuffer[m++] = castRay(eye_pos, dir, scene, 0);
         }
         UpdateProgress(j / (float)scene.height);
@@ -241,9 +246,9 @@ void Renderer::Render(const Scene& scene)
     (void)fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
     for (auto i = 0; i < scene.height * scene.width; ++i) {
         static unsigned char color[3];
-        color[0] = (char)(255 * clamp(0, 1, framebuffer[i].x));
-        color[1] = (char)(255 * clamp(0, 1, framebuffer[i].y));
-        color[2] = (char)(255 * clamp(0, 1, framebuffer[i].z));
+        color[0] = (unsigned char)(255 * clamp(0, 1, framebuffer[i].x));
+        color[1] = (unsigned char)(255 * clamp(0, 1, framebuffer[i].y));
+        color[2] = (unsigned char)(255 * clamp(0, 1, framebuffer[i].z));
         fwrite(color, 1, 3, fp);
     }
     fclose(fp);    
