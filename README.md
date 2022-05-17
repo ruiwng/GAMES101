@@ -75,7 +75,7 @@ Triangle without and with super sampling:
 There are three mistakes existing in this assignment:
 - In the implementation of blinn-phong shading model, (0, 0, 10) is used as the camera pos, which is wrong, as in the camera coordiniate, the camera pos should be at the origin.
 - the essence of dispalcement map is adding some offset to vertex position according to the dislacement map, rather than to pixel position.
-- In the calculation of TBN transformation, the procedure of computing B is unreasonable. the B and T's direction should be consistent with the direction of U and V direction of the bump map respectively, only in this way, can the finite difference dU and dV be meaningful. If you want to know more, [LearnOpenGL](https://learnopengl.com/Advanced-Lighting/Normal-Mapping) gives a correction computation.
+- In the calculation of TBN transformation, the procedure of computing B is unreasonable. the B and T's direction should be consistent with the direction of U and V direction of the bump map respectively, only in this way, can the finite difference dU and dV make sense. If you want to know more, [LearnOpenGL](https://learnopengl.com/Advanced-Lighting/Normal-Mapping) gives a correction computation.
 
 Normal visualization and Blinn-Phong shading model:
 
@@ -96,3 +96,11 @@ This assignment is trival, it takes only several minutes to implement de Castelj
 Bézier curve without and with anti-aliasing:
 
 <img src="output/bezier_curve.png" width ="480" height="480"> <img src="output/bezier_curve_anti_aliasing.png" width ="480" height="480">
+
+## Assignment 5: Ray Generation And Intersection With Triangles
+
+Here we use Moller-Trumbore algorithm to judge whether a ray is intersected with a triangle, if intersected, the barycentric coordinate of the intersection point will be given, the three components of the barycentric coordinate should be non-negative, otherwise the triangle is missed. in the process of this algorithm, we need to solve a Ax = b equation, a general way to solve a low dimensional equation is [Cramer's Rule](https://math.libretexts.org/Bookshelves/Precalculus/Precalculus_(OpenStax)/09%3A_Systems_of_Equations_and_Inequalities/9.08%3A_Solving_Systems_with_Cramer's_Rule), in this rule, the determinants of n + 1 (n is the dimension of x) matrices is needed beforehand. for a 3x3 matrix A[c1 c2 c3] (c1 c2 c3 are the three columns of the matrix), a quick way to compute its determinant is dot(cross(c1, c2), c3).
+
+An error occurred when saving the rendered image to a ppm file in the base code of this assignment, which is triggered by overflow of assigning a unsigned char whose range is (0, 255) to a char whose range is (-127, 128). modifying the conversion from char to unsigned char will solve this issue.
+
+<img src="output/whitted_style_ray_tracer.png" width="640" height="480">
