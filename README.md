@@ -62,9 +62,9 @@ To compute the matrix which we need to transform to the standard orthogonal basi
 
 The architecture provided by this assignment has done a lot for us. what left to us to do is just solving the visibility problem with the help of depth buffer. another problem is to judge whether a given point is in a triangle or not, which can be solved easily by calculating whether the point is all on the same side of the threes lines of the triangle using cross product.
 
-Another point worth mentioning is how to compute the perspective-correct interpolation, although this homework has already handled this problem for us, it's worthwhile to take some time to figure out how it works. such as how the z-coordinate is correctly interpolated, and how the attributes of the vertex is interpolated. If you want to know more, you can refer to Mathematics for 3D Game Programming and Computer Graphics, Third Edition, this book gives a very elegant and easy-to-understand explanation.
+Another point worth mentioning is how to compute the perspective-correct interpolation, although this homework has already handled this problem for us, it's worthwhile to take some time to figure out how it works. such as how the z-coordinate is correctly interpolated, and how the attributes of the vertex is interpolated. If you want to know more, you can refer to ***Mathematics for 3D Game Programming and Computer Graphics, Third Edition***, this book gives a very elegant and easy-to-understand explanation.
 
-SSAA(Super Sampling Anti-Aliasing) implementation is trival, a nice way is to just double the size of the frame buffer and the depth buffer, and after rasterization, down-sample the doubled frame buffer to a normal size. 
+SSAA(Super Sampling Anti-Aliasing) implementation is trival, a nice way is to just double the size of the frame buffer and the depth buffer, and after rasterization, down-sample the double-sized frame buffer to a normal size. 
 
 Triangle without and with super sampling:
 
@@ -74,8 +74,8 @@ Triangle without and with super sampling:
 
 There are three mistakes existing in this assignment:
 - In the implementation of blinn-phong shading model, (0, 0, 10) is used as the camera pos, which is wrong, as in the camera coordiniate, the camera pos should be at the origin.
-- the essence of dispalcement map is adding some offset to vertex position according to the dislacement map, rather than to pixel position.
-- In the calculation of TBN transformation, the procedure of computing B is unreasonable. the B and T's direction should be consistent with the direction of U and V direction of the bump map respectively, only in this way, can the finite difference dU and dV make sense. If you want to know more, [LearnOpenGL](https://learnopengl.com/Advanced-Lighting/Normal-Mapping) gives a correction computation.
+- the essence of dispalcement map is adding some offset to vertex position according to the displacement map, rather than to pixel position.
+- In the calculation of TBN transformation, the procedure of computing B is unreasonable. the B and T's direction should be consistent with the direction of U and V of the bump map respectively, only in this way, can the finite difference dU and dV make sense. If you want to know more, [LearnOpenGL](https://learnopengl.com/Advanced-Lighting/Normal-Mapping) gives a correct computation.
 
 Normal visualization and Blinn-Phong shading model:
 
