@@ -236,6 +236,15 @@ inline Intersection Triangle::getIntersection(Ray ray)
 
 
 
+    if(t_tmp < 0.0f) {
+        return inter;
+    }
+    inter.happened = true;
+    inter.coords = ray.origin + ray.direction * t_tmp;
+    inter.normal = normal;
+    inter.distance = t_tmp;
+    inter.obj = this;
+    inter.m = m;
     return inter;
 }
 
