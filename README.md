@@ -56,7 +56,7 @@ To compute a rotation matrix about arbitrary axis passing through origin, you ne
 
 To compute the matrix which we need to transform to the standard orthogonal basis, we need to build a new orthogonal basis, using the rotation axis as the z-axis, and calculate x-axis and y-axis, there are a lot of them, as long as x-axis, y-axis and z-axis are orthogonal to each other, and then set these three axis as the first three columns of the objective matrix. note that if a matrix is orthogornal matrix, you can calculate its inverse matrix by just transpose it which is fast.
 
-<img src="output/assignment1.png" width ="480" height="480">
+<img src="assignment1/images/transformation.png" width ="480" height="480">
 
 ## Assignment 2: Triangles And Z-buffering
 
@@ -68,7 +68,7 @@ SSAA(Super Sampling Anti-Aliasing) implementation is trival, a nice way is to ju
 
 Triangle without and with super sampling:
 
-<img src="output/triangle.png" width ="480" height="480"> <img src="output/super_sampling.png" width ="480" height="480">
+<img src="assignment2/images/triangle.png" width ="480" height="480"> <img src="assignment2/images/super_sampling.png" width ="480" height="480">
 
 ## Assignment 3: Pipeline and Shading
 
@@ -79,15 +79,15 @@ There are three mistakes existing in this assignment:
 
 Normal visualization and Blinn-Phong shading model:
 
-<img src="output/normal.png" width ="480" height="480"> <img src="output/blinn_phong.png" width ="480" height="480">
+<img src="assignment3/images/normal.png" width ="480" height="480"> <img src="assignment3/images/blinn_phong.png" width ="480" height="480">
 
 Bump map and Displacement map:
 
-<img src="output/bump_map.png" width ="480" height="480"> <img src="output/displacement_map.png" width ="480" height="480">
+<img src="assignment3/images/bump_map.png" width ="480" height="480"> <img src="assignment3/images/displacement_map.png" width ="480" height="480">
 
 Texture nearest vs bilinear interpolation:
 
-<img src="output/texture_nearest_interpolation.png" width ="480" height="480"> <img src="output/texture_bilinear_interpolation.png" width="480" height="480">
+<img src="assignment3/images/texture_nearest_interpolation.png" width ="480" height="480"> <img src="assignment3/images/texture_bilinear_interpolation.png" width="480" height="480">
 
 ## Assignment 4: Bézier Curve
 
@@ -95,7 +95,7 @@ This assignment is trival, it takes only several minutes to implement de Castelj
 
 Bézier curve without and with anti-aliasing:
 
-<img src="output/bezier_curve.png" width ="480" height="480"> <img src="output/bezier_curve_anti_aliasing.png" width ="480" height="480">
+<img src="assignment4/images/bezier_curve.png" width ="480" height="480"> <img src="assignment4/images/bezier_curve_anti_aliasing.png" width ="480" height="480">
 
 ## Assignment 5: Ray Generation And Intersection With Triangles
 
@@ -103,4 +103,4 @@ Here we use Moller-Trumbore algorithm to judge whether a ray is intersected with
 
 An error occurred when saving the rendered image to a ppm file in the base code of this assignment, which is triggered by overflow of assigning a unsigned char whose range is (0, 255) to a char whose range is (-127, 128). modifying the conversion from char to unsigned char will solve this issue.
 
-<img src="output/whitted_style_ray_tracer.png" width="640" height="480">
+<img src="assignment5/images/whitted_style_ray_tracer.png" width="640" height="480">
