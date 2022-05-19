@@ -104,3 +104,9 @@ Here we use Moller-Trumbore algorithm to judge whether a ray is intersected with
 An error occurred when saving the rendered image to a ppm file in the base code of this assignment, which is triggered by overflow of assigning a unsigned char whose range is (0, 255) to a char whose range is (-127, 128). modifying the conversion from char to unsigned char will solve this issue.
 
 <img src="assignment5/images/whitted_style_ray_tracer.png" width="640" height="480">
+
+## Assignment 6: BVH Acceleration
+
+In this assignment, I have implemented both a naive BVH and a SAH (Surface Area Heuristic) based BVH, after that, I compared both methods' speed on my computer (macOS Big Sur 16GB 2.6GHz 6-Core Intel Core i7) from two dimensions, one is the time to construct BVH tree, the other is the time to render a bunny model using the acceleration structure. the times using naive BVH are 13ms and 784ms respectively, compared to that, It spends both 49ms and 428ms with SAH based BVH. Then we can draw a conclusion that SAH based BVH is much better than the naive one to accelerate intersections.
+
+<img src="assignment6/images/bvh_acceleration.png" width="640" height="480">
