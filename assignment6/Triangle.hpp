@@ -123,7 +123,8 @@ public:
         for (auto& tri : triangles)
             ptrs.push_back(&tri);
 
-        bvh = new BVHAccel(ptrs);
+        bvh = new BVHAccel(ptrs, 3, BVHAccel::SplitMethod::SAH);
+        // bvh = new BVHAccel(ptrs);
     }
 
     bool intersect(const Ray& ray) { return true; }

@@ -2,27 +2,101 @@
 #include <cassert>
 #include "BVH.hpp"
 
+#define SAH_SPLIT_COUNT 12
+
 BVHAccel::BVHAccel(std::vector<Object*> p, int maxPrimsInNode,
                    SplitMethod splitMethod)
     : maxPrimsInNode(std::min(255, maxPrimsInNode)), splitMethod(splitMethod),
       primitives(std::move(p))
 {
-    time_t start, stop;
-    time(&start);
     if (primitives.empty())
         return;
 
-    root = recursiveBuild(primitives);
+    auto start = std::chrono::system_clock::now();
+    if(splitMethod == SplitMethod::NAIVE) {
+        root = recursiveBuild(primitives);
+    } else {
+        root = recursiveBuildSAH(0, primitives.size());
+    }
+    auto stop = std::chrono::system_clock::now();
 
-    time(&stop);
-    double diff = difftime(stop, start);
-    int hrs = (int)diff / 3600;
-    int mins = ((int)diff / 60) - (hrs * 60);
-    int secs = (int)diff - (hrs * 3600) - (mins * 60);
+    std::cout << "BVH Generation complete:: \n";
+    std::cout << "Time taken: " << std::chrono::duration_cast<std::chrono::hours>(stop - start).count() << " hours\n";
+    std::cout << "          : " << std::chrono::duration_cast<std::chrono::minutes>(stop - start).count() << " minutes\n";
+    std::cout << "          : " << std::chrono::duration_cast<std::chrono::seconds>(stop - start).count() << " seconds\n";
+    std::cout << "          : " << std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() << " milliseconds\n";
+}
 
-    printf(
-        "\rBVH Generation complete: \nTime Taken: %i hrs, %i mins, %i secs\n\n",
-        hrs, mins, secs);
+
+BVHBuildNode* BVHAccel::recursiveBuildSAH(size_t firstPrimOffset, size_t nPrimitives) {
+    Bounds3 bbox;
+    for(size_t i = 0; i < nPrimitives; ++i) {
+        bbox = Union(bbox, primitives[firstPrimOffset + i]->getBounds());
+    }
+    BVHBuildNode* node = new BVHBuildNode();
+    node->left = nullptr;
+    node->right = nullptr;
+    node->bounds = bbox;
+    node->firstPrimOffset = firstPrimOffset;
+    node->nPrimitives = nPrimitives;
+    if(nPrimitives <= maxPrimsInNode) {
+        return node;
+    }
+
+    float totalArea = bbox.SurfaceArea();
+    float minCost = std::numeric_limits<float>::max();
+    size_t minAxis = 0;
+    size_t minLeftCount;
+    float splitPos;
+    Vector3f diagonal = bbox.Diagonal();
+    for(size_t axis = 0; axis < 3; ++axis) {
+        std::sort(primitives.begin() + firstPrimOffset, primitives.begin() + firstPrimOffset + nPrimitives, 
+        [&](Object* lhs, Object* rhs) -> bool {
+            return lhs->getBounds().Centroid()[axis] < rhs->getBounds().Centroid()[axis];
+        });
+
+        Bounds3 leftBound, rightBound;
+        std::vector<Bounds3> leftBounds;
+        std::vector<Bounds3> rightBounds;
+        for(size_t i = 0; i < nPrimitives; ++i) {
+            leftBound = Union(leftBound, primitives[firstPrimOffset + i]->getBounds());
+            rightBound = Union(rightBound, primitives[firstPrimOffset + nPrimitives - i - 1]->getBounds());
+            leftBounds.push_back(leftBound);
+            rightBounds.push_back(rightBound);
+        }
+        float splitOffset = bbox.pMin[axis];
+        float splitStep = diagonal[axis] / SAH_SPLIT_COUNT;
+        int objectIndex = firstPrimOffset;
+        size_t leftCount, rightCount;
+        float leftArea, rightArea;
+        for(size_t splitNum = 0; splitNum < SAH_SPLIT_COUNT - 1; ++splitNum) {
+            splitOffset += splitStep;
+            while((objectIndex < firstPrimOffset + nPrimitives) && primitives[objectIndex]->getBounds().Centroid()[axis] < splitOffset) {
+                ++objectIndex;
+            }
+            leftCount = objectIndex - firstPrimOffset;
+            rightCount = nPrimitives - leftCount;
+            leftArea = leftCount == 0? 0: leftBounds[leftCount - 1].SurfaceArea();
+            rightArea = rightCount == 0? 0: rightBounds[rightCount - 1].SurfaceArea();
+            float cost = .125f + (leftCount * leftArea + rightCount * rightArea) / totalArea;
+            if(cost < minCost) {
+                minCost = cost;
+                minAxis = axis;
+                splitPos = splitOffset;
+                minLeftCount = leftCount;
+            }
+        }
+    }
+    std::sort(primitives.begin() + firstPrimOffset, primitives.begin() + firstPrimOffset + nPrimitives, 
+        [&](Object* lhs, Object* rhs) -> bool {
+            return lhs->getBounds().Centroid()[minAxis] < rhs->getBounds().Centroid()[minAxis];
+    });
+    if(minLeftCount == nPrimitives) {
+        return node;
+    }
+    node->left = recursiveBuildSAH(firstPrimOffset, minLeftCount);
+    node->right = recursiveBuildSAH(firstPrimOffset + minLeftCount, nPrimitives - minLeftCount);
+    return node;
 }
 
 BVHBuildNode* BVHAccel::recursiveBuild(std::vector<Object*> objects)
@@ -98,7 +172,11 @@ Intersection BVHAccel::Intersect(const Ray& ray) const
     Intersection isect;
     if (!root)
         return isect;
-    isect = BVHAccel::getIntersection(root, ray);
+    if(splitMethod == SplitMethod::NAIVE) {
+        isect = BVHAccel::getIntersection(root, ray);
+    } else {
+        isect = BVHAccel::getIntersectionSAH(root, ray);
+    }
     return isect;
 }
 
@@ -120,4 +198,49 @@ Intersection BVHAccel::getIntersection(BVHBuildNode* node, const Ray& ray) const
     } else {
         return intersectionRight;
     }
+}
+
+Intersection BVHAccel::getIntersectionSAH(BVHBuildNode* node, const Ray& ray) const
+{
+    Intersection isect;
+    if(node->isLeaf()) {
+        for(int i = 0; i < node->nPrimitives; ++i) {
+            auto intersection = primitives[node->firstPrimOffset + i]->getIntersection(ray);
+            if(intersection.happened &&(!isect.happened ||(isect.happened && intersection.distance < isect.distance))) {
+                isect = intersection;
+            }
+        }
+        return isect;
+    }
+    std::array<int, 3> dirIsNeg = {int(ray.direction_inv[0] < 0.0), int(ray.direction_inv[1] < 0.0), int(ray.direction_inv[2] < 0.0)};
+    float leftRangeMin, leftRangeMax;
+    bool isLeftIntersec = node->left->bounds.IntersectP(ray, ray.direction_inv, dirIsNeg, leftRangeMin, leftRangeMax);
+    float rightRangeMin, rightRangeMax;
+    bool isRightIntersec = node->right->bounds.IntersectP(ray, ray.direction_inv, dirIsNeg, rightRangeMin, rightRangeMax);
+    if(isLeftIntersec && isRightIntersec) {
+        float secondMin;
+        BVHBuildNode *firstNode, *secondNode;
+        if(leftRangeMin < rightRangeMin) {
+            secondMin = rightRangeMin;
+            firstNode = node->left;
+            secondNode = node->right;
+        } else {
+            secondMin = leftRangeMin;
+            firstNode = node->right;
+            secondNode = node->left;
+        }
+        auto firstIntersection = getIntersectionSAH(firstNode, ray);
+        if(!firstIntersection.happened || (firstIntersection.happened && firstIntersection.distance > secondMin)) {
+            auto secondIntersection = getIntersectionSAH(secondNode, ray);
+            if(secondIntersection.happened &&(!firstIntersection.happened || (firstIntersection.distance > secondIntersection.distance))) {
+                firstIntersection = secondIntersection;
+            }
+        }
+        return firstIntersection;
+    } else if(isLeftIntersec) {
+        return getIntersectionSAH(node->left, ray);
+    } else if(isRightIntersec) {
+        return getIntersectionSAH(node->right, ray);
+    }
+    return isect;
 }

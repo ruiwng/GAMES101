@@ -34,12 +34,14 @@ public:
 
     Intersection Intersect(const Ray &ray) const;
     Intersection getIntersection(BVHBuildNode* node, const Ray& ray)const;
+    Intersection getIntersectionSAH(BVHBuildNode* node, const Ray& ray) const;
     bool IntersectP(const Ray &ray) const;
     BVHBuildNode* root;
 
     // BVHAccel Private Methods
     BVHBuildNode* recursiveBuild(std::vector<Object*>objects);
 
+    BVHBuildNode* recursiveBuildSAH(size_t firstPrimOffset, size_t nPrimitives);
     // BVHAccel Private Data
     const int maxPrimsInNode;
     const SplitMethod splitMethod;
@@ -59,6 +61,9 @@ public:
         bounds = Bounds3();
         left = nullptr;right = nullptr;
         object = nullptr;
+    }
+    bool isLeaf() {
+        return left == nullptr;
     }
 };
 
