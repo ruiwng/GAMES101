@@ -123,7 +123,7 @@ My advice for this assignment is implementing it step by step, The point is to k
 - render the direct lighting.
 - render the indirect lighting.
 
-you are fate to come across the self-intersection problem when you shoot secondary ray or shadow ray. more precisely, if you shoot a secondary ray from an object you may intersect the object itself because of float-precision issue, or you may intersect the light source itself when you check whether there is a blocker between the shading point and the light source. My solution to the first problem is just offset the start point of the ray across the normal directoin a little bit. and the solution to the second one is to just check the object intersected is the light source itself, if not, we're certain that there is no blocker between the shading point and the light source.
+you are fate to come across the self-intersection problem when you shoot secondary ray or shadow ray. more precisely, if you shoot a secondary ray from an object you may intersect the object itself because of float-precision issue, or you may intersect the light source itself when you check whether there is a blocker between the shading point and the light source. My solution to the first problem is just offset the start point of the ray across the normal directoin a little bit. and the solution to the second one is to just check if the object intersected is the light source itself, if not, we're certain that there is no blocker between the shading point and the light source.
 
 normal visualization:
 
