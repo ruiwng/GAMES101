@@ -116,6 +116,7 @@ Because that it may take a long time to finish rendering an image with path trac
 - employing 1 spp at the start time.
 - decreasing the number of meshes.
 - keeping the ray's bouncing time fewer.
+
 My advice for this assignment is implementing it step by step, The point is to keep the influence factor as less as possible. you may divide the problem into smaller ones just as I do, and conquer them respectively, in order to keep the complexity as low as possible. Make sure the former one works fine, then continue with the next one. Here are the steps when I try to finish the assignment:
 - show the intersection's normal as shading point's color, to make sure you correctly compute the intersection with the scene as well as the intersection's information.
 - render the light source with no bounce.
