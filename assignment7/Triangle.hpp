@@ -48,9 +48,9 @@ public:
     Vector3f normal;
     float area;
     Material* m;
-
-    Triangle(Vector3f _v0, Vector3f _v1, Vector3f _v2, Material* _m = nullptr)
-        : v0(_v0), v1(_v1), v2(_v2), m(_m)
+    Object* object;
+    Triangle(Vector3f _v0, Vector3f _v1, Vector3f _v2, Material* _m = nullptr, Object* _o=nullptr)
+        : v0(_v0), v1(_v1), v2(_v2), m(_m), object(_o)
     {
         e1 = v1 - v0;
         e2 = v2 - v0;
@@ -122,7 +122,7 @@ public:
             }
 
             triangles.emplace_back(face_vertices[0], face_vertices[1],
-                                   face_vertices[2], mt);
+                                   face_vertices[2], mt, this);
         }
 
         bounding_box = Bounds3(min_vert, max_vert);
@@ -253,7 +253,15 @@ inline Intersection Triangle::getIntersection(Ray ray)
     t_tmp = dotProduct(e2, qvec) * det_inv;
 
     // TODO find ray triangle intersection
-
+    if(t_tmp < 0.0f) {
+        return inter;
+    }
+    inter.happened = true;
+    inter.coords = ray.origin + ray.direction * t_tmp;
+    inter.normal = normal;
+    inter.distance = t_tmp;
+    inter.obj = object == nullptr? this: object;
+    inter.m = m;
     return inter;
 }
 

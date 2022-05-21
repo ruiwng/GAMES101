@@ -27,11 +27,10 @@ public:
     Scene(int w, int h) : width(w), height(h)
     {}
 
-    void Add(Object *object) { objects.push_back(object); }
-    void Add(std::unique_ptr<Light> light) { lights.push_back(std::move(light)); }
+    void Add(Object *object) { objects.push_back(object); if(object->hasEmit()) {lights.push_back(object); }}
 
     const std::vector<Object*>& get_objects() const { return objects; }
-    const std::vector<std::unique_ptr<Light> >&  get_lights() const { return lights; }
+    const std::vector<Object*>&  get_lights() const { return lights; }
     Intersection intersect(const Ray& ray) const;
     BVHAccel *bvh;
     void buildBVH();
@@ -45,7 +44,7 @@ public:
 
     // creating the scene (adding objects and lights)
     std::vector<Object* > objects;
-    std::vector<std::unique_ptr<Light> > lights;
+    std::vector<Object* > lights;
 
     // Compute reflection direction
     Vector3f reflect(const Vector3f &I, const Vector3f &N) const
