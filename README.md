@@ -110,3 +110,34 @@ An error occurred when saving the rendered image to a ppm file in the base code 
 In this assignment, I have implemented both a naive BVH and a SAH (Surface Area Heuristic) based BVH, after that, I compared both methods' speed on my computer (macOS Big Sur 16GB 2.6GHz 6-Core Intel Core i7) from two dimensions, one is the time to construct BVH tree, the other is the time to render a bunny model using the acceleration structure. the times using naive BVH are 13ms and 784ms respectively, compared to that, It spends both 49ms and 428ms with SAH based BVH. Then we can draw a conclusion that SAH based BVH is much better than the naive one to accelerate intersections.
 
 <img src="assignment6/images/bvh_acceleration.png" width="640" height="480">
+
+## Assignment 7: Path Tracing
+Because that it may take a long time to finish rendering an image with path tracing algorithm, you may want to accelerate it. Here are several tips:
+- employing 1 spp at the start time.
+- decreasing the number of meshes.
+- keeping the ray's bouncing time fewer.
+My advice for this assignment is implementing it step by step, The point is to keep the influence factor as less as possible. you may divide the problem into smaller ones just as I do, and conquer them respectively, in order to keep the complexity as low as possible. Make sure the former one works fine, then continue with the next one. Here are the steps when I try to finish the assignment:
+- show the intersection's normal as shading point's color, to make sure you correctly compute the intersection with the scene as well as the intersection's information.
+- render the light source with no bounce.
+- render the direct lighting.
+- render the indirect lighting.
+
+you are fate to come across the self-intersection problem when you shoot secondary ray or shadow ray. more precisely, if you shoot a secondary ray from an object you may intersect the object itself because of float-precision issue, or you may intersect the light source itself when you check whether there is a blocker between the shading point and the light source. My solution to the first problem is just offset the start point of the ray across the normal directoin a little bit. and the solution to the second one is to just check the object intersected is the light source itself, if not, we're certain that there is no blocker between the shading point and the light source.
+
+normal visualization:
+
+<img src="assignment7/images/normal_visualization.png" width="480" height="480">
+
+light with no bounce:
+
+<img src="assignment7/images/light_no_bounce.png" width="480" height="480">
+
+direct lighting:
+
+<img src="assignment7/images/direct_lighting.png" width="480" height="480">
+
+path tracing with 1 and 16 spp respectively:
+
+<img src="assignment7/images/path_tracing_1spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_16spp.png" width="480" height="480">
+
+
