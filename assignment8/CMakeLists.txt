@@ -144,6 +144,9 @@ endif(WIN32)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Freetype REQUIRED)
+find_package(PNG REQUIRED) 
+find_package(BZIP2 REQUIRED)
+find_package(ZLIB REQUIRED)
 
 # CGL
 if(BUILD_LIBCGL)

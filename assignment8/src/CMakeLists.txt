@@ -39,6 +39,9 @@ target_link_libraries( ropesim
     ${OPENGL_LIBRARIES}
     ${FREETYPE_LIBRARIES}
     ${CMAKE_THREADS_INIT}
+    ${PNG_LIBRARY}
+    ${ZLIB_LIBRARY}
+    ${BZIP2_LIBRARY}
 )
 
 #-------------------------------------------------------------------------------
