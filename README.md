@@ -141,6 +141,10 @@ path tracing with 1 and 16 spp respectively:
 
 <img src="assignment7/images/path_tracing_1spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_16spp.png" width="480" height="480">
 
+mirror and glass material with 1 spp respectively:
+
+<img src="assignment7/images/mirror_glass_material_1spp.png" width="480" height="480"> 
+
 ## Assignment 8: Mass-Spring System
 
 This assignment is straightforward, the key point is just calculating the direction and magnitude of the force correctly.
