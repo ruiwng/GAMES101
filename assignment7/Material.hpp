@@ -7,7 +7,7 @@
 
 #include "Vector.hpp"
 
-enum MaterialType { DIFFUSE};
+enum MaterialType { DIFFUSE, SPECULAR, GLASS};
 
 class Material{
 private:
@@ -15,7 +15,7 @@ private:
     // Compute reflection direction
     Vector3f reflect(const Vector3f &I, const Vector3f &N) const
     {
-        return I - 2 * dotProduct(I, N) * N;
+        return 2 * dotProduct(I, N) * N - I;
     }
 
     // Compute refraction direction using Snell's law
@@ -29,15 +29,23 @@ private:
     // If the ray is outside, you need to make cosi positive cosi = -N.I
     //
     // If the ray is inside, you need to invert the refractive indices and negate the normal N
-    Vector3f refract(const Vector3f &I, const Vector3f &N, const float &ior) const
+   bool refract(const Vector3f &I, const Vector3f &N, const float &ior, Vector3f &refract_dir) const
     {
-        float cosi = clamp(-1, 1, dotProduct(I, N));
+        float cosi = dotProduct(I, N);
         float etai = 1, etat = ior;
         Vector3f n = N;
-        if (cosi < 0) { cosi = -cosi; } else { std::swap(etai, etat); n= -N; }
+        if (cosi < 0) {
+            cosi = -cosi;
+            std::swap(etai, etat);
+            n= -N;
+        }
         float eta = etai / etat;
         float k = 1 - eta * eta * (1 - cosi * cosi);
-        return k < 0 ? 0 : eta * I + (eta * cosi - sqrtf(k)) * n;
+        if(k < 0) {
+            return false;
+        }
+        refract_dir = -eta * I + (eta * cosi - sqrtf(k)) * n;
+        return true;
     }
 
     // Compute Fresnel equation
@@ -51,17 +59,17 @@ private:
     // \param[out] kr is the amount of light reflected
     void fresnel(const Vector3f &I, const Vector3f &N, const float &ior, float &kr) const
     {
-        float cosi = clamp(-1, 1, dotProduct(I, N));
+        float cosi = dotProduct(I, N);
         float etai = 1, etat = ior;
-        if (cosi > 0) {  std::swap(etai, etat); }
+        if (cosi < 0) {  std::swap(etai, etat); }
         // Compute sini using Snell's law
-        float sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi * cosi));
+        float sint = etai / etat * sqrtf(1 - cosi * cosi);
         // Total internal reflection
         if (sint >= 1) {
             kr = 1;
         }
         else {
-            float cost = sqrtf(std::max(0.f, 1 - sint * sint));
+            float cost = sqrtf(1 - sint * sint);
             cosi = fabsf(cosi);
             float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
             float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
@@ -142,6 +150,27 @@ Vector3f Material::sample(const Vector3f &wi, const Vector3f &N){
             
             break;
         }
+        case SPECULAR:
+        {
+            return reflect(wi, N);
+            break;
+        }
+        case GLASS:
+        {
+            Vector3f refract_dir;
+            bool is_refract = refract(wi, N, ior, refract_dir);
+            if(!is_refract) {
+                return reflect(wi, N);
+            }
+            float kr;
+            fresnel(wi, N, ior, kr);
+            if(get_random_float() < kr) {
+                return reflect(wi, N);
+            } else {
+                return refract_dir;
+            }
+            break;
+        }
     }
 }
 
@@ -154,6 +183,16 @@ float Material::pdf(const Vector3f &wi, const Vector3f &wo, const Vector3f &N){
                 return 0.5f / M_PI;
             else
                 return 0.0f;
+            break;
+        }
+        case SPECULAR:
+        {
+            return 1.0f;
+            break;
+        }
+        case GLASS:
+        {
+            return 1.0f;
             break;
         }
     }
@@ -171,6 +210,16 @@ Vector3f Material::eval(const Vector3f &wi, const Vector3f &wo, const Vector3f &
             }
             else
                 return Vector3f(0.0f);
+            break;
+        }
+        case SPECULAR:
+        {
+            return Ks;
+            break;
+        }
+        case GLASS:
+        {
+            return Ks;
             break;
         }
     }

@@ -25,16 +25,23 @@ int main(int argc, char** argv)
     Material* light = new Material(DIFFUSE, (8.0f * Vector3f(0.747f+0.058f, 0.747f+0.258f, 0.747f) + 15.6f * Vector3f(0.740f+0.287f,0.740f+0.160f,0.740f) + 18.4f *Vector3f(0.737f+0.642f,0.737f+0.159f,0.737f)));
     light->Kd = Vector3f(0.65f);
 
+    Material* specular = new Material(SPECULAR, Vector3f(0.0f));
+    specular->Ks = Vector3f(1.0f, 1.0f, 1.0f);
+    Material* refract = new Material(GLASS, Vector3f(0.0f));
+    refract->ior = 1.5f;
+    refract->Ks = Vector3f(1.0f, 1.0f, 1.0f);
     MeshTriangle floor("../models/cornellbox/floor.obj", white);
-    MeshTriangle shortbox("../models/cornellbox/shortbox.obj", white);
-    MeshTriangle tallbox("../models/cornellbox/tallbox.obj", white);
+    // MeshTriangle shortbox("../models/cornellbox/shortbox.obj", white);
+    // MeshTriangle tallbox("../models/cornellbox/tallbox.obj", white);
+    Sphere leftsphere(Vector3f(368.5f, 100.0f, 351.5f), 100.0f, specular);
+    Sphere rightsphere(Vector3f(186.0f, 100.0f, 168.5f), 100.0f, refract);
     MeshTriangle left("../models/cornellbox/left.obj", red);
     MeshTriangle right("../models/cornellbox/right.obj", green);
     MeshTriangle light_("../models/cornellbox/light.obj", light);
 
     scene.Add(&floor);
-    scene.Add(&shortbox);
-    scene.Add(&tallbox);
+    scene.Add(&leftsphere);
+    scene.Add(&rightsphere);
     scene.Add(&left);
     scene.Add(&right);
     scene.Add(&light_);

@@ -59,6 +59,7 @@ bool Scene::trace(
 }
 
 // Implementation of Path Tracing
+// if the ray intersect light source and depth is 0, then the emit of light source is returned, otherwise 0 is returned
 Vector3f Scene::castRay(const Ray &ray, int depth) const
 {
     // TO DO Implement Path Tracing Algorithm here
@@ -66,7 +67,7 @@ Vector3f Scene::castRay(const Ray &ray, int depth) const
     if(!inter.happened) {
         return Vector3f(0.0f, 0.0f, 0.0f);
     }
-    // return (inter.normal + Vector3f(1.0f, 1.0f, 1.0f)) * 0.5f; 
+    // return (inter.normal + Vector3f(1.0f, 1.0f, 1.0f)) * 0.5f;
     if(inter.obj->hasEmit()) {
         if(depth == 0) {
             return inter.m->m_emission;
@@ -75,31 +76,43 @@ Vector3f Scene::castRay(const Ray &ray, int depth) const
         }
     }
     Vector3f dirRadiance, indirRadiance;
-    Intersection posLight;
-    float pdfLight;
-    sampleLight(posLight, pdfLight);
-
-    Vector3f shadowDir = posLight.coords - inter.coords;
-    float shadowDirLength = shadowDir.norm();
-    shadowDir = normalize(shadowDir);
-    Vector3f shadowPosOffset = dotProduct(inter.normal, shadowDir) >= 0.0f ? (1e-5 * inter.normal) : (-1e-5 * inter.normal);
-    Ray shadowRay(inter.coords + shadowPosOffset, shadowDir);
-    auto shadowInter = intersect(shadowRay);
     Vector3f rayDir = -normalize(ray.direction);
-    if(!(shadowInter.happened && shadowInter.obj != posLight.obj)) {
-        float m = std::max(0.0f, dotProduct(-shadowDir, posLight.normal));
-        Vector3f bsdf = inter.m->eval(rayDir, shadowRay.direction, inter.normal);
-        dirRadiance = posLight.emit * bsdf * std::max(0.0f, dotProduct(shadowDir, inter.normal)) * m / (shadowDirLength * shadowDirLength * pdfLight);
-    }
+    if(inter.m->getType() == DIFFUSE) {
+         Intersection posLight;
+        float pdfLight;
+        sampleLight(posLight, pdfLight);
 
+        Vector3f shadowDir = posLight.coords - inter.coords;
+        float shadowDirLength = shadowDir.norm();
+        shadowDir = normalize(shadowDir);
+        Vector3f shadowPosOffset = dotProduct(inter.normal, shadowDir) >= 0.0f ? (1e-2 * inter.normal) : (-1e-2 * inter.normal);
+        Ray shadowRay(inter.coords + shadowPosOffset, shadowDir);
+        auto shadowInter = intersect(shadowRay);
+        
+        if(!(shadowInter.happened && shadowInter.obj != posLight.obj)) {
+            float m = std::max(0.0f, dotProduct(-shadowDir, posLight.normal));
+            Vector3f bsdf = inter.m->eval(rayDir, shadowRay.direction, inter.normal);
+            dirRadiance = posLight.emit * bsdf * std::max(0.0f, dotProduct(shadowDir, inter.normal)) * m / (shadowDirLength * shadowDirLength * pdfLight);
+        }
+    }
+   
     // russian roulette
     if(get_random_float() < RussianRoulette) {
         Vector3f wo = inter.m->sample(rayDir, inter.normal);
         wo = normalize(wo);
-        Vector3f posOffset = 1e-5 * inter.normal;
+        Vector3f n = inter.normal;
+        float cos_term = dotProduct(wo, n);
+        if(cos_term < 0.0f) {
+            // transmission occurs
+            cos_term = -cos_term;
+            n = -n;
+        }
+        Vector3f posOffset = 1e-2 * n;
         Ray secondaryRay(inter.coords + posOffset, wo);
-        indirRadiance = castRay(secondaryRay, depth + 1) * inter.m->eval(rayDir, wo, inter.normal) * std::max(0.0f, dotProduct(wo, inter.normal)) / (inter.m->pdf(rayDir, wo, inter.normal) * RussianRoulette);
+        int d = inter.m->getType() == DIFFUSE ? (depth + 1): 0;
+        Vector3f radiance = castRay(secondaryRay, d);
+        Vector3f bsdf = inter.m->eval(rayDir, wo, inter.normal);
+        indirRadiance = radiance * bsdf * cos_term / (inter.m->pdf(rayDir, wo, inter.normal) * RussianRoulette);
     }
-    
     return dirRadiance + indirRadiance;
 }

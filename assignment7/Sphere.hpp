@@ -72,6 +72,7 @@ public:
 
     Vector3f evalDiffuseColor(const Vector2f &st)const {
         //return m->getColor();
+        return Vector3f(0.0f);
     }
     Bounds3 getBounds(){
         return Bounds3(Vector3f(center.x-radius, center.y-radius, center.z-radius),
