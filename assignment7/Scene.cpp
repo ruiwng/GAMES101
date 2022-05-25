@@ -99,20 +99,24 @@ Vector3f Scene::castRay(const Ray &ray, int depth) const
     // russian roulette
     if(get_random_float() < RussianRoulette) {
         Vector3f wo = inter.m->sample(rayDir, inter.normal);
-        wo = normalize(wo);
-        Vector3f n = inter.normal;
-        float cos_term = dotProduct(wo, n);
-        if(cos_term < 0.0f) {
-            // transmission occurs
-            cos_term = -cos_term;
-            n = -n;
+        float pdf = inter.m->pdf(rayDir, wo, inter.normal);
+        if(pdf > EPSILON) {
+            wo = normalize(wo);
+            Vector3f n = inter.normal;
+            float cos_term = dotProduct(wo, n);
+            if(cos_term < 0.0f) {
+                // transmission occurs
+                cos_term = -cos_term;
+                n = -n;
+            }
+            Vector3f posOffset = 1e-2 * n;
+            Ray secondaryRay(inter.coords + posOffset, wo);
+            int d = inter.m->getType() == DIFFUSE ? (depth + 1): 0;
+            Vector3f radiance = castRay(secondaryRay, d);
+            Vector3f bsdf = inter.m->eval(rayDir, wo, inter.normal);
+            indirRadiance = radiance * bsdf * cos_term / (inter.m->pdf(rayDir, wo, inter.normal) * RussianRoulette);
         }
-        Vector3f posOffset = 1e-2 * n;
-        Ray secondaryRay(inter.coords + posOffset, wo);
-        int d = inter.m->getType() == DIFFUSE ? (depth + 1): 0;
-        Vector3f radiance = castRay(secondaryRay, d);
-        Vector3f bsdf = inter.m->eval(rayDir, wo, inter.normal);
-        indirRadiance = radiance * bsdf * cos_term / (inter.m->pdf(rayDir, wo, inter.normal) * RussianRoulette);
+        
     }
     return dirRadiance + indirRadiance;
 }
