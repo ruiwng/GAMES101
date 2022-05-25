@@ -41,20 +41,19 @@ void Renderer::Render(const Scene& scene)
     Vector3f eye_pos(278, 273, -800);
 
     // change the spp value to change sample ammount
-    int spp = 1;
+    int spp = 1024;
     std::cout << "SPP: " << spp << "\n";
     int threadCount = 3;
     std::cout << "Thread Count: " << threadCount << "\n";
     auto renderThread = [&]() {
         uint32_t row, column;
         while(GetPixelCoord(row, column)) {
-            float x = (2 * (column + 0.5) / (float)scene.width - 1) *
-                      imageAspectRatio * scale;
-            float y = (1 - 2 * (row + 0.5) / (float)scene.height) * scale;
-
-            Vector3f dir = normalize(Vector3f(-x, y, 1));
             for (int k = 0; k < spp; k++){
-                framebuffer[row * scene.width + column] += scene.castRay(Ray(eye_pos, dir), 0) / spp;  
+                float x = (2 * (column + get_random_float()) / (float)scene.width - 1) *
+                      imageAspectRatio * scale;
+                float y = (1 - 2 * (row + get_random_float()) / (float)scene.height) * scale;
+                Vector3f dir = normalize(Vector3f(-x, y, 1));
+                framebuffer[row * scene.width + column] += scene.castRay(Ray(eye_pos, dir), 0);  
             }
             log_mtx.lock();
             ++pixel_processed;
@@ -75,6 +74,7 @@ void Renderer::Render(const Scene& scene)
     FILE* fp = fopen("binary.ppm", "wb");
     (void)fprintf(fp, "P6\n%d %d\n255\n", scene.width, scene.height);
     for (auto i = 0; i < scene.height * scene.width; ++i) {
+        framebuffer[i] = framebuffer[i] * (1.0 / spp);
         static unsigned char color[3];
         color[0] = (unsigned char)(255 * std::pow(clamp(0, 1, framebuffer[i].x), 0.6f));
         color[1] = (unsigned char)(255 * std::pow(clamp(0, 1, framebuffer[i].y), 0.6f));
