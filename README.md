@@ -157,6 +157,9 @@ There are several bugs that I came across worth mentioning here:
 
 - generating random float with the provided get_random_float is too slow. this method repeatly creates random_device, mt19937, uniform_real_distribution every time we call it. this is a waste of time, especially that this method is called frequently. using static decorator will be a good choice to prevent from creating these local variables again and again.
 
+- the two spheres with mirror and glass material respsectively are too dark at the grazing angle. imagine that if bsdf is ***Ks***, then according to rendering equation, at the grazing angle, bsdf is fixed, cosine term is very small, leading to small radiance along ***wo*** direction which doesn't make sense. that's the reason why the shading point with specular material at the grazing angle is dark. so the bsdf term of mirror should be ***Ks / dot(N, wi)*** in order to cancel out cosine term, rather than ***Ks***.
+
+
 ## Assignment 8: Mass-Spring System
 
 This assignment is straightforward, the key point is just calculating the direction and magnitude of the force correctly.
