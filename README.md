@@ -137,13 +137,25 @@ direct lighting:
 
 <img src="assignment7/images/direct_lighting.png" width="480" height="480">
 
-path tracing with 1, 16 and 256 spp respectively:
+path tracing with 1, 16, 256, 1024 spp respectively:
 
-<img src="assignment7/images/path_tracing_1spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_16spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_256spp.png" width="480" height="480">
+<img src="assignment7/images/path_tracing_1spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_16spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_256spp.png" width="480" height="480"> <img src="assignment7/images/anti_aliasing_1024spp.png" width="480" height="480">
 
-mirror and glass material with 1 and 16 spp respectively:
+mirror and glass material with 1, 16, 256 and 1024 spp respectively:
 
-<img src="assignment7/images/mirror_glass_material_1spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_16spp.png" width="480" height="480"> 
+<img src="assignment7/images/mirror_glass_material_1spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_16spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_256spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_1024spp.png" width="480" height="480"> 
+
+There are several bugs that I came across worth mentioning here:
+
+- obvious aliases occur at the boundaries of the two boxes. This artifact can be avoided by random sampling in a pixel when shooting a ray into the scene. here are the rendered images without vs with anti-aliasing(both are 1024spp):
+
+<img src="assignment7/images/no_anti_aliasing_1024spp.png" width="480" height="480"> <img src="assignment7/images/anti_aliasing_1024spp.png" width="480" height="480"> 
+
+- too bright pixels are randomly distributed at the walls. It takes me a lot of time to find out the reason why they are there. when the pdf of a sample is too close to 0.0, we apply this pdf in the rendering equation, we will get a very large radiance, in other words, large variance. This bug can be easily prevented by skipping the samples whose pdf is too small. here are the rendered images with vs without bright pixels(both are 1024spp, you may need to magnify them to see the bright points clearly):
+
+<img src="assignment7/images/bright_point_1024spp.png" width="480" height="480"> <img src="assignment7/images/anti_aliasing_1024spp.png" width="480" height="480"> 
+
+- generating random float with the provided get_random_float is too slow. this method repeatly creates random_device, mt19937, uniform_real_distribution every time we call it. this is a waste of time, especially that this method is called frequently. using static decorator will be a good choice to prevent from creating these local variables again and again.
 
 ## Assignment 8: Mass-Spring System
 
