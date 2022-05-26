@@ -137,13 +137,13 @@ direct lighting:
 
 <img src="assignment7/images/direct_lighting.png" width="480" height="480">
 
-path tracing with 1, 16, 256, 1024 spp respectively:
+path tracing with 1, 16, 256, 1024 and 50000 spp respectively:
 
-<img src="assignment7/images/path_tracing_1spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_16spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_256spp.png" width="480" height="480"> <img src="assignment7/images/anti_aliasing_1024spp.png" width="480" height="480">
+<img src="assignment7/images/path_tracing_1spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_16spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_256spp.png" width="480" height="480"> <img src="assignment7/images/anti_aliasing_1024spp.png" width="480" height="480"> <img src="assignment7/images/path_tracing_50000spp.png" width="480" height="480">
 
-mirror and glass material with 1, 16, 256 and 1024 spp respectively:
+mirror and glass material with 1, 16, 256, 1024 and 50000 spp respectively:
 
-<img src="assignment7/images/mirror_glass_material_1spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_16spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_256spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_1024spp.png" width="480" height="480"> 
+<img src="assignment7/images/mirror_glass_material_1spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_16spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_256spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_1024spp.png" width="480" height="480"> <img src="assignment7/images/mirror_glass_material_50000spp.png" width="480" height="480"> 
 
 There are several bugs that I came across worth mentioning here:
 
