@@ -114,7 +114,10 @@ Vector3f Scene::castRay(const Ray &ray, int depth) const
             int d = inter.m->getType() == DIFFUSE ? (depth + 1): 0;
             Vector3f radiance = castRay(secondaryRay, d);
             Vector3f bsdf = inter.m->eval(rayDir, wo, inter.normal);
-            indirRadiance = radiance * bsdf * cos_term / (inter.m->pdf(rayDir, wo, inter.normal) * RussianRoulette);
+            indirRadiance = radiance * bsdf / (pdf * RussianRoulette);
+            if(inter.m->getType() == DIFFUSE) {
+                indirRadiance = indirRadiance * cos_term;
+            }
         }
         
     }

@@ -216,12 +216,12 @@ Vector3f Material::eval(const Vector3f &wi, const Vector3f &wo, const Vector3f &
         }
         case SPECULAR:
         {
-            return Ks / std::abs(dotProduct(wi, N));
+            return Ks;
             break;
         }
         case GLASS:
         {
-            return Ks / std::abs(dotProduct(wi, N));
+            return Ks;
             break;
         }
     }
